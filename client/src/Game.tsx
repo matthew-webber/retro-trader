@@ -8,9 +8,10 @@ interface StockData {
 }
 
 function Game() {
-  const [stock, setStock] = useState<StockData | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [stock, setStock] = useState<StockData | null>(null); // Initialize stock as null
+  const [loading, setLoading] = useState(true); // Track loading state
+  const [error, setError] = useState<string | null>(null); // Track error state
+
   const [shares, setShares] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [profit, setProfit] = useState<number | null>(null);
@@ -38,7 +39,7 @@ function Game() {
       });
   }, []);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!stock) return;
 
@@ -46,29 +47,36 @@ function Game() {
     setProfit(null);
     setCalcError(null);
 
-    fetch('/api/calc', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        ticker: stock.symbol,
-        purchase_date: stock.date,
-        shares,
-      }),
-    })
-      .then((res) => res.json().then((data) => ({ ok: res.ok, data })))
-      .then(({ ok, data }) => {
-        if (!ok) {
-          setCalcError(data.error || 'Calculation error');
-        } else {
-          setProfit(data.profit);
-        }
-        setSubmitting(false);
-      })
-      .catch(() => {
-        setCalcError('Network error');
-        setSubmitting(false);
+    try {
+      const res = await fetch('/api/calc', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ticker: stock.symbol,
+          purchase_date: stock.date,
+          shares,
+        }),
       });
+      const data = await res.json();
+      if (!res.ok) {
+        setCalcError(data.error || 'Calculation error');
+      } else {
+        setProfit(data.profit);
+      }
+    } catch {
+      setCalcError('Network error');
+    } finally {
+      setSubmitting(false);
+    }
   };
+
+  if (loading) {
+    return <p>Loading...</p>;
+  }
+
+  if (error || !stock) {
+    return <p>Error: {error || 'Unable to load stock data'}</p>;
+  }
 
   if (loading) {
     return <p>Loading...</p>;
