@@ -20,13 +20,7 @@ DEFAULT_SYMBOLS: List[str] = [
 
 
 def get_random_stock_data(days: int = 5) -> Dict[str, Any]:
-    """Fetch recent historical data for a random stock symbol.
-
-    Parameters
-    ----------
-    days: int
-        Number of days of history to return (including most recent day).
-    """
+    """Fetch recent historical data for a random stock symbol."""
     symbol = random.choice(DEFAULT_SYMBOLS)
     ticker = yf.Ticker(symbol)
     history = ticker.history(period=f"{days}d")
@@ -53,26 +47,8 @@ def get_random_stock_data(days: int = 5) -> Dict[str, Any]:
     }
 
 
-def calculate_profit(
-    ticker: str, purchase_date: str, shares: float
-) -> Optional[float]:
-    """Calculate profit for a given ticker and share count.
-
-    Parameters
-    ----------
-    ticker: str
-        Stock ticker symbol.
-    purchase_date: str
-        Date shares were purchased in ``YYYY-MM-DD`` format.
-    shares: float
-        Number of shares purchased.
-
-    Returns
-    -------
-    Optional[float]
-        Profit or loss. ``None`` if price data is unavailable.
-    """
-
+def calculate_profit(ticker: str, purchase_date: str, shares: float) -> Optional[float]:
+    """Calculate profit or loss for a given stock position."""
     try:
         datetime.strptime(purchase_date, "%Y-%m-%d")
     except ValueError:
