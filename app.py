@@ -4,6 +4,7 @@ from flask_cors import CORS
 from stock_service import get_random_stock_data
 
 app = Flask(__name__)
+app.url_map.strict_slashes = False
 CORS(app)
 
 
