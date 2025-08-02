@@ -92,7 +92,7 @@ function Game() {
           </ul>
         </div>
       )}
-      <form onSubmit={handleSubmit} style={{ marginTop: '1rem' }}>
+      <form className="trade-form" onSubmit={handleSubmit}>
         <label>
           Shares:
           <input
@@ -104,13 +104,13 @@ function Game() {
             required
           />
         </label>
-        <button type="submit" disabled={submitting} style={{ marginLeft: '0.5rem' }}>
+        <button type="submit" disabled={submitting}>
           Calculate
         </button>
       </form>
-      {calcError && <p>{calcError}</p>}
+      {calcError && <p className="result">{calcError}</p>}
       {profit !== null && (
-        <p>
+        <p className="result">
           Profit/Loss: {profit >= 0 ? '+' : ''}
           {profit.toFixed(2)}
         </p>
