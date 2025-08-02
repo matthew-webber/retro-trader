@@ -4,7 +4,7 @@ from . import app
 from .yfinance_utils import get_random_stock_data, calculate_profit
 
 
-@app.route("/api/data", methods=["GET"])
+@app.route("/api/sanity-check", methods=["GET"])
 def get_data():
     """Example endpoint returning a simple message."""
     return jsonify({"message": "Hello, World!"})
@@ -38,3 +38,4 @@ def calc_profit():
     if profit is None:
         return jsonify({"error": "Price data unavailable"}), 400
     return jsonify({"profit": profit})
+
