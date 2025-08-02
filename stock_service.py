@@ -1,6 +1,6 @@
 import random
-from datetime import datetime
-from typing import List, Dict, Any
+from datetime import datetime, timedelta
+from typing import List, Dict, Any, Optional
 
 import yfinance as yf
 
@@ -51,3 +51,47 @@ def get_random_stock_data(days: int = 5) -> Dict[str, Any]:
         "close": closing_price,
         "previous_closes": previous_prices,
     }
+
+
+def calculate_profit(
+    ticker: str, purchase_date: str, shares: float
+) -> Optional[float]:
+    """Calculate profit for a given ticker and share count.
+
+    Parameters
+    ----------
+    ticker: str
+        Stock ticker symbol.
+    purchase_date: str
+        Date shares were purchased in ``YYYY-MM-DD`` format.
+    shares: float
+        Number of shares purchased.
+
+    Returns
+    -------
+    Optional[float]
+        Profit or loss. ``None`` if price data is unavailable.
+    """
+
+    try:
+        datetime.strptime(purchase_date, "%Y-%m-%d")
+    except ValueError:
+        return None
+
+    ticker_obj = yf.Ticker(ticker)
+    today = datetime.utcnow().date()
+
+    history = ticker_obj.history(
+        start=purchase_date,
+        end=(today + timedelta(days=1)).strftime("%Y-%m-%d"),
+    )
+    if history.empty:
+        return None
+    purchase_close = float(history.iloc[0]["Close"])
+
+    today_history = ticker_obj.history(period="1d")
+    if today_history.empty:
+        return None
+    today_close = float(today_history["Close"].iloc[-1])
+
+    return (today_close - purchase_close) * shares
