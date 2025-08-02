@@ -20,15 +20,19 @@ function Game() {
     fetch('/api/random-stock')
       .then((res) => {
         if (!res.ok) {
-          throw new Error('Failed to fetch stock data');
+          throw new Error(`HTTP ${res.status}: Failed to fetch stock data`);
         }
         return res.json();
       })
       .then((data) => {
+        if (!data.symbol || !data.date || typeof data.close !== 'number') {
+          throw new Error('Invalid stock data format');
+        }
         setStock(data);
         setLoading(false);
       })
       .catch((err: Error) => {
+        console.error('Fetch error:', err);
         setError(err.message);
         setLoading(false);
       });
