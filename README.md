@@ -2,6 +2,18 @@
 
 A minimal Flask application with a React front-end.
 
+Run the API with:
+
+```
+python -m retrotrader
+```
+
+or using Flask's CLI:
+
+```
+flask --app retrotrader run
+```
+
 ## API Endpoints
 
 - `/api/data` - Returns a simple message.
