@@ -1,0 +1,21 @@
+{
+  "name": "retro-trader",
+  "version": "1.0.0",
+  "description": "A minimal Flask application with a React front-end.",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "concurrently \"cd client && npm run dev\" \"python app.py\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/matthew-webber/retro-trader.git"
+  },
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/matthew-webber/retro-trader/issues"
+  },
+  "homepage": "https://github.com/matthew-webber/retro-trader#readme",
+  "dependencies": {
+    "concurrently": "^9.2.0"
+  }
+}
