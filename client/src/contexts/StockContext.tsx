@@ -15,12 +15,27 @@ export interface StockContextType {
   refetchStock: () => void;
 }
 
-export const StockContext = createContext<StockContextType | undefined>(undefined);
+export const StockContext = createContext<StockContextType | undefined>(
+  undefined
+);
 
 export const StockProvider = ({ children }: { children: ReactNode }) => {
   const [stock, setStock] = useState<StockData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const formatStockData = (data: any): StockData => {
+    return {
+      symbol: data.symbol,
+      date: data.date,
+      close: parseFloat(data.close.toFixed(2)),
+      previous_closes:
+        data.previous_closes?.map((item: any) => ({
+          date: item.date,
+          close: parseFloat(item.close.toFixed(2)),
+        })) || [],
+    };
+  };
 
   const fetchStock = async () => {
     setLoading(true);
@@ -34,7 +49,10 @@ export const StockProvider = ({ children }: { children: ReactNode }) => {
       if (!data.symbol || !data.date || typeof data.close !== 'number') {
         throw new Error('Invalid stock data format');
       }
-      setStock(data);
+      // Format the stock data to 2 decimal places
+      const formattedStock: StockData = formatStockData(data);
+
+      setStock(formattedStock);
     } catch (err) {
       console.error('Fetch error:', err);
       const message = err instanceof Error ? err.message : 'Unknown error';

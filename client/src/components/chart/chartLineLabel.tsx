@@ -30,7 +30,10 @@ export const ChartLineLabel = () => {
     return <p>Error loading chart</p>;
   }
 
-  const chartData = [...stock.previous_closes, { date: stock.date, close: stock.close }];
+  const chartData = [
+    ...stock.previous_closes,
+    { date: stock.date, close: stock.close },
+  ];
 
   const chartConfig = {
     close: {
@@ -82,7 +85,7 @@ export const ChartLineLabel = () => {
               }}
             >
               <LabelList
-                position="top"
+                position="bottom"
                 offset={12}
                 className="fill-foreground"
                 fontSize={12}
@@ -95,9 +98,7 @@ export const ChartLineLabel = () => {
         <div className="flex gap-2 leading-none font-medium">
           {stock.symbol} last {chartData.length} days
         </div>
-        <div className="text-muted-foreground leading-none">
-          Closing prices
-        </div>
+        <div className="text-muted-foreground leading-none">Closing prices</div>
       </CardFooter>
     </Card>
   );
