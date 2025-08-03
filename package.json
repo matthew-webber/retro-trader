@@ -4,7 +4,7 @@
   "description": "A minimal Flask application with a React front-end.",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "bash -c 'while true; do concurrently --kill-others-on-fail \"cd client && npm run dev\" \"python app.py\"; echo \"Something died; restarting in 3s...\"; sleep 3; done'"
+    "dev": "bash -c 'source venv/bin/activate; while true; do concurrently --kill-others-on-fail \"cd client && npm run dev\" \"python app.py\"; echo \"Something died; restarting in 3s...\"; sleep 3; done'"
   },
   "repository": {
     "type": "git",
