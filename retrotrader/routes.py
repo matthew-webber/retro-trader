@@ -1,7 +1,7 @@
 from flask import jsonify, request
 
 from . import app
-from .yfinance_utils import get_random_stock_data, calculate_profit
+from .yfinance_utils import get_random_stock_data, calculate_profit, get_stock_data
 
 
 @app.route("/api/sanity-check", methods=["GET"])
@@ -39,3 +39,18 @@ def calc_profit():
         return jsonify({"error": "Price data unavailable"}), 400
     return jsonify({"profit": profit})
 
+
+@app.route("/api/stock", methods=["GET"])
+def stock_by_ticker_and_date():
+    """Return stock data for a specific ticker, start/end date"""
+    ticker = request.args.get("ticker")
+    start_date = request.args.get("start_date", "")
+    end_date = request.args.get("end_date", "")
+
+    if not ticker:
+        return jsonify({"error": "Missing required parameters"}), 400
+
+    data = get_stock_data(ticker, start_date, end_date)
+    if not data:
+        return jsonify({"error": "No data found"}), 404
+    return jsonify(data)

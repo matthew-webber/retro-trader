@@ -71,3 +71,44 @@ def calculate_profit(ticker: str, purchase_date: str, shares: float) -> Optional
     today_close = float(today_history["Close"].iloc[-1])
 
     return (today_close - purchase_close) * shares
+
+
+def get_stock_data(ticker: str, start_date: str, end_date: str) -> Dict[str, Any]:
+    """Fetch stock data for a specific ticker and date range."""
+    if not start_date or not end_date:
+        # set default to last 30 days if no dates provided
+        end = (datetime.now()).strftime("%Y-%m-%d")
+        start = (datetime.now() - timedelta(days=30)).strftime("%Y-%m-%d")
+    else:
+        try:
+            start = datetime.strptime(start_date, "%Y-%m-%d")
+            end = datetime.strptime(end_date, "%Y-%m-%d")
+        except ValueError:
+            return {}
+
+    ticker_obj = yf.Ticker(ticker)
+    history = ticker_obj.history(
+        # dev note: start is inclusive, end is exclusive
+        start=start,
+        end=end,
+    )
+
+    if history.empty:
+        return {}
+
+    history = history.reset_index()
+    data = {
+        "ticker": ticker,
+        "data": [
+            {
+                "date": row["Date"].strftime("%Y-%m-%d"),
+                "open": float(row["Open"]),
+                "high": float(row["High"]),
+                "low": float(row["Low"]),
+                "close": float(row["Close"]),
+                "volume": int(row["Volume"]),
+            }
+            for _, row in history.iterrows()
+        ],
+    }
+    return data
