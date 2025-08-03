@@ -94,26 +94,33 @@ export const StockProvider = ({ children }: { children: ReactNode }) => {
         }
         const response: StockAPIResponse = await res.json();
         console.log('Fetched stock data:', response);
-        
+
         // Handle the new data structure: { ticker: string, data: [...] }
-        if (!response.ticker || !response.data || !Array.isArray(response.data) || response.data.length === 0) {
+        if (
+          !response.ticker ||
+          !response.data ||
+          !Array.isArray(response.data) ||
+          response.data.length === 0
+        ) {
           throw new Error('Invalid stock data format');
         }
-        
+
         // Get the most recent data point (last item in array)
         const latestData = response.data[response.data.length - 1];
-        
+
         // Format the data to match our StockData interface
         const formattedData = {
           symbol: response.ticker,
           date: latestData.date,
           close: latestData.close,
-          previous_closes: response.data.slice(0, -1).map((item: { date: string; close: number }) => ({
-            date: item.date,
-            close: item.close,
-          })),
+          previous_closes: response.data
+            .slice(0, -1)
+            .map((item: { date: string; close: number }) => ({
+              date: item.date,
+              close: item.close,
+            })),
         };
-        
+
         // Format the stock data to 2 decimal places
         const formattedStock: StockData = formatStockData(formattedData);
 
@@ -143,7 +150,7 @@ export const StockProvider = ({ children }: { children: ReactNode }) => {
       'NVDA',
       'NFLX',
     ];
-    const randomDurations = [10, 30, 60, 90];
+    const randomDurations = [5, 10, 20, 30, 60];
 
     const randomTicker =
       randomTickers[Math.floor(Math.random() * randomTickers.length)];
@@ -178,24 +185,31 @@ export const StockProvider = ({ children }: { children: ReactNode }) => {
         console.log('Fetched initial stock data:', response);
 
         // Handle the new data structure: { ticker: string, data: [...] }
-        if (!response.ticker || !response.data || !Array.isArray(response.data) || response.data.length === 0) {
+        if (
+          !response.ticker ||
+          !response.data ||
+          !Array.isArray(response.data) ||
+          response.data.length === 0
+        ) {
           throw new Error('Invalid stock data format');
         }
-        
+
         // Get the most recent data point (last item in array)
         const latestData = response.data[response.data.length - 1];
-        
+
         // Format the data to match our StockData interface
         const formattedData = {
           symbol: response.ticker,
           date: latestData.date,
           close: latestData.close,
-          previous_closes: response.data.slice(0, -1).map((item: { date: string; close: number }) => ({
-            date: item.date,
-            close: item.close,
-          })),
+          previous_closes: response.data
+            .slice(0, -1)
+            .map((item: { date: string; close: number }) => ({
+              date: item.date,
+              close: item.close,
+            })),
         };
-        
+
         // Format the stock data to 2 decimal places
         const formattedStock: StockData = formatStockData(formattedData);
 

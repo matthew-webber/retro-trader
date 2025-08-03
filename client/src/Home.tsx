@@ -91,10 +91,11 @@ const Home = () => {
                 value={duration}
                 onChange={(e) => setDuration(Number(e.target.value))}
               >
+                <option value={5}>5 days</option>
                 <option value={10}>10 days</option>
+                <option value={20}>20 days</option>
                 <option value={30}>30 days</option>
                 <option value={60}>60 days</option>
-                <option value={90}>90 days</option>
               </select>
             </label>
           </div>
