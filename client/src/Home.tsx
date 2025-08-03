@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import Data from './Data';
 
 interface StockData {
   symbol: string;
@@ -7,7 +8,7 @@ interface StockData {
   previous_closes: { date: string; close: number }[];
 }
 
-function Game() {
+const Home = () => {
   const [stock, setStock] = useState<StockData | null>(null); // Initialize stock as null
   const [loading, setLoading] = useState(true); // Track loading state
   const [error, setError] = useState<string | null>(null); // Track error state
@@ -87,48 +88,51 @@ function Game() {
   }
 
   return (
-    <div className="game">
-      <h2>
-        {stock.symbol} on {stock.date}
-      </h2>
-      <p>Close: ${stock.close.toFixed(2)}</p>
-      {stock.previous_closes?.length > 0 && (
-        <div className="context">
-          <h3>Previous closes</h3>
-          <ul>
-            {stock.previous_closes.map(({ date, close }) => (
-              <li key={date}>
-                {date}: ${close.toFixed(2)}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-      <form className="trade-form" onSubmit={handleSubmit}>
-        <label>
-          Shares:
-          <input
-            type="number"
-            min="1"
-            step="any"
-            value={shares}
-            onChange={(e) => setShares(e.target.value)}
-            required
-          />
-        </label>
-        <button type="submit" disabled={submitting}>
-          Calculate
-        </button>
-      </form>
-      {calcError && <p className="result">{calcError}</p>}
-      {profit !== null && (
-        <p className="result">
-          Profit/Loss: {profit >= 0 ? '+' : ''}
-          {profit.toFixed(2)}
-        </p>
-      )}
-    </div>
+    <>
+      <div className="game">
+        <h2>
+          {stock.symbol} on {stock.date}
+        </h2>
+        <p>Close: ${stock.close.toFixed(2)}</p>
+        {stock.previous_closes?.length > 0 && (
+          <div className="context">
+            <h3>Previous closes</h3>
+            <ul>
+              {stock.previous_closes.map(({ date, close }) => (
+                <li key={date}>
+                  {date}: ${close.toFixed(2)}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+        <form className="trade-form" onSubmit={handleSubmit}>
+          <label>
+            Shares:
+            <input
+              type="number"
+              min="1"
+              step="any"
+              value={shares}
+              onChange={(e) => setShares(e.target.value)}
+              required
+            />
+          </label>
+          <button type="submit" disabled={submitting}>
+            Calculate
+          </button>
+        </form>
+        {calcError && <p className="result">{calcError}</p>}
+        {profit !== null && (
+          <p className="result">
+            Profit/Loss: {profit >= 0 ? '+' : ''}
+            {profit.toFixed(2)}
+          </p>
+        )}
+      </div>
+      <Data />
+    </>
   );
-}
+};
 
-export default Game;
+export default Home;
