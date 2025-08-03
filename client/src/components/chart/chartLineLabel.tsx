@@ -57,8 +57,8 @@ export const ChartLineLabel = () => {
             data={chartData}
             margin={{
               top: 20,
-              left: 12,
-              right: 12,
+              left: 30,
+              right: 30,
             }}
           >
             <CartesianGrid vertical={false} />
@@ -67,6 +67,7 @@ export const ChartLineLabel = () => {
               tickLine={false}
               axisLine={false}
               tickMargin={8}
+              tickFormatter={(date) => new Date(date).toLocaleDateString()}
             />
             <ChartTooltip
               cursor={false}
