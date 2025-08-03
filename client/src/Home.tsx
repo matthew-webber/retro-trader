@@ -8,8 +8,10 @@ const Home = () => {
     error,
     ticker,
     duration,
+    endDate,
     setTicker,
     setDuration,
+    setEndDate,
     fetchStock,
   } = useStock();
 
@@ -51,7 +53,7 @@ const Home = () => {
 
   const handleFetchStock = (e: React.FormEvent) => {
     e.preventDefault();
-    fetchStock(ticker, duration);
+    fetchStock(ticker, duration, endDate);
   };
 
   if (loading) {
@@ -100,6 +102,19 @@ const Home = () => {
                     <option value={30}>30 days</option>
                     <option value={60}>60 days</option>
                   </select>
+                </label>
+              </div>
+              <div>
+                <label className="block mb-2 font-black">
+                  End Date:
+                  <input
+                    className="border p-2 rounded"
+                    type="date"
+                    value={endDate}
+                    onChange={(e) => setEndDate(e.target.value)}
+                    max={new Date().toISOString().split('T')[0]} // Can't select future dates
+                    required
+                  />
                 </label>
               </div>
               <button

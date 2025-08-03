@@ -32,9 +32,11 @@ export interface StockContextType {
   error: string | null;
   ticker: string;
   duration: number;
+  endDate: string;
+  setEndDate: (endDate: string) => void;
   setTicker: (ticker: string) => void;
   setDuration: (duration: number) => void;
-  fetchStock: (ticker?: string, duration?: number) => void;
+  fetchStock: (ticker?: string, duration?: number, endDate?: string) => void;
 }
 
 export const StockContext = createContext<StockContextType | undefined>(
@@ -47,6 +49,7 @@ export const StockProvider = ({ children }: { children: ReactNode }) => {
   const [error, setError] = useState<string | null>(null);
   const [ticker, setTicker] = useState('');
   const [duration, setDuration] = useState(30);
+  const [endDate, setEndDate] = useState('');
 
   const formatStockData = (data: {
     symbol: string;
@@ -67,25 +70,26 @@ export const StockProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const fetchStock = useCallback(
-    async (newTicker?: string, newDuration?: number) => {
+    async (newTicker?: string, newDuration?: number, newEndDate?: string) => {
       const targetTicker = newTicker || ticker;
       const targetDuration = newDuration || duration;
+      const targetEndDate = newEndDate || endDate;
 
-      if (!targetTicker) return;
+      if (!targetTicker || !targetEndDate) return;
 
       setLoading(true);
       setError(null);
 
       try {
-        // Calculate start date based on duration
-        const endDate = new Date();
-        const startDate = new Date();
-        startDate.setDate(endDate.getDate() - targetDuration);
+        // Calculate start date based on duration and end date
+        const endDateObj = new Date(targetEndDate);
+        const startDate = new Date(endDateObj);
+        startDate.setDate(endDateObj.getDate() - targetDuration);
 
         const params = new URLSearchParams({
           ticker: targetTicker,
           start_date: startDate.toISOString().split('T')[0],
-          end_date: endDate.toISOString().split('T')[0],
+          end_date: endDateObj.toISOString().split('T')[0],
         });
 
         const res = await fetch(`/api/stock?${params}`);
@@ -127,6 +131,7 @@ export const StockProvider = ({ children }: { children: ReactNode }) => {
         setStock(formattedStock);
         if (newTicker) setTicker(newTicker);
         if (newDuration) setDuration(newDuration);
+        if (newEndDate) setEndDate(newEndDate);
       } catch (err) {
         console.error('Fetch error:', err);
         const message = err instanceof Error ? err.message : 'Unknown error';
@@ -135,7 +140,7 @@ export const StockProvider = ({ children }: { children: ReactNode }) => {
         setLoading(false);
       }
     },
-    [ticker, duration]
+    [ticker, duration, endDate]
   );
 
   useEffect(() => {
@@ -156,9 +161,18 @@ export const StockProvider = ({ children }: { children: ReactNode }) => {
       randomTickers[Math.floor(Math.random() * randomTickers.length)];
     const randomDuration =
       randomDurations[Math.floor(Math.random() * randomDurations.length)];
+    
+    // Generate random end date within the last 2 years
+    const today = new Date();
+    const twoYearsAgo = new Date();
+    twoYearsAgo.setFullYear(today.getFullYear() - 2);
+    
+    const randomTime = twoYearsAgo.getTime() + Math.random() * (today.getTime() - twoYearsAgo.getTime());
+    const randomEndDate = new Date(randomTime).toISOString().split('T')[0];
 
     setTicker(randomTicker);
     setDuration(randomDuration);
+    setEndDate(randomEndDate);
 
     // Call fetchStock directly with the random values
     const fetchInitialStock = async () => {
@@ -166,15 +180,15 @@ export const StockProvider = ({ children }: { children: ReactNode }) => {
       setError(null);
 
       try {
-        // Calculate start date based on duration
-        const endDate = new Date();
-        const startDate = new Date();
-        startDate.setDate(endDate.getDate() - randomDuration);
+        // Calculate start date based on duration and random end date
+        const endDateObj = new Date(randomEndDate);
+        const startDate = new Date(endDateObj);
+        startDate.setDate(endDateObj.getDate() - randomDuration);
 
         const params = new URLSearchParams({
           ticker: randomTicker,
           start_date: startDate.toISOString().split('T')[0],
-          end_date: endDate.toISOString().split('T')[0],
+          end_date: randomEndDate,
         });
 
         const res = await fetch(`/api/stock?${params}`);
@@ -234,6 +248,8 @@ export const StockProvider = ({ children }: { children: ReactNode }) => {
         error,
         ticker,
         duration,
+        endDate,
+        setEndDate,
         setTicker,
         setDuration,
         fetchStock,
