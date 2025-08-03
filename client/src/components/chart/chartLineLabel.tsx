@@ -9,7 +9,14 @@ import {
   ChartTooltipContent,
 } from '@/components/ui/chart';
 
-import { CartesianGrid, LabelList, Line, LineChart, XAxis } from 'recharts';
+import {
+  CartesianGrid,
+  LabelList,
+  Line,
+  LineChart,
+  XAxis,
+  YAxis,
+} from 'recharts';
 import {
   Card,
   CardContent,
@@ -18,6 +25,8 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+
+import { useState, useRef, useEffect } from 'react';
 
 export const ChartLineLabel = () => {
   const { stock, loading, error } = useStock();
@@ -35,12 +44,78 @@ export const ChartLineLabel = () => {
     { date: stock.date, close: stock.close },
   ];
 
+  // Calculate dynamic Y-axis range
+  const prices = chartData.map((item) => item.close);
+  const minPrice = Math.min(...prices);
+  const maxPrice = Math.max(...prices);
+
+  // Add padding (e.g., 5% above and below)
+  const padding = (maxPrice - minPrice) * 0.05;
+  const yAxisMin = Math.max(0, minPrice - padding); // Don't go below 0
+  const yAxisMax = maxPrice + padding;
+
   const chartConfig = {
     close: {
       label: `${stock.symbol} Close`,
       color: 'var(--chart-1)',
     },
   } satisfies ChartConfig;
+
+  const LabelWithBackgroundSVG = ({
+    x,
+    y,
+    value,
+  }: {
+    x?: string | number;
+    y?: string | number;
+    value?: string | number;
+  }) => {
+    const textRef = useRef<SVGTextElement | null>(null);
+    const [bbox, setBBox] = useState<DOMRect | null>(null);
+
+    useEffect(() => {
+      if (textRef.current) {
+        const raf = requestAnimationFrame(() => {
+          if (textRef.current) {
+            setBBox(textRef.current.getBBox());
+          }
+        });
+        return () => cancelAnimationFrame(raf);
+      }
+    }, [value]);
+
+    if (x == null || y == null || value == null) return null;
+
+    const padding = 4; // px
+    // shift label upward so it doesn't overlap the point
+    const translateX = x;
+    const translateY = typeof y === 'number' ? y - 20 : y;
+
+    return (
+      <g transform={`translate(${translateX}, ${translateY})`}>
+        {bbox && (
+          <rect
+            x={bbox.x - padding}
+            y={bbox.y - padding}
+            width={bbox.width + padding * 2}
+            height={bbox.height + padding * 2}
+            rx={4}
+            fill="#000"
+          />
+        )}
+        <text
+          ref={textRef}
+          fontSize={12}
+          fontWeight="bold"
+          fill="white"
+          dominantBaseline="middle"
+          textAnchor="start"
+        >
+          {value}
+        </text>
+      </g>
+    );
+  };
 
   return (
     <Card>
@@ -69,6 +144,13 @@ export const ChartLineLabel = () => {
               tickMargin={8}
               tickFormatter={(date) => new Date(date).toLocaleDateString()}
             />
+            <YAxis
+              domain={[yAxisMin, yAxisMax]}
+              tickLine={false}
+              axisLine={false}
+              tickMargin={8}
+              tickFormatter={(value) => `$${value.toFixed(2)}`}
+            />
             <ChartTooltip
               cursor={false}
               content={<ChartTooltipContent indicator="line" />}
@@ -90,6 +172,7 @@ export const ChartLineLabel = () => {
                 offset={12}
                 className="fill-foreground"
                 fontSize={12}
+                content={(props) => <LabelWithBackgroundSVG {...props} />}
               />
             </Line>
           </LineChart>
