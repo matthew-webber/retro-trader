@@ -27,6 +27,7 @@ import {
 } from '@/components/ui/card';
 
 import { useState, useRef, useEffect } from 'react';
+import { LabelWithBackgroundSVG } from './internal/labelWithBackgroundSVG';
 
 export const ChartLineLabel = () => {
   const { stock, loading, error } = useStock();
@@ -61,62 +62,6 @@ export const ChartLineLabel = () => {
     },
   } satisfies ChartConfig;
 
-  const LabelWithBackgroundSVG = ({
-    x,
-    y,
-    value,
-  }: {
-    x?: string | number;
-    y?: string | number;
-    value?: string | number;
-  }) => {
-    const textRef = useRef<SVGTextElement | null>(null);
-    const [bbox, setBBox] = useState<DOMRect | null>(null);
-
-    useEffect(() => {
-      if (textRef.current) {
-        const raf = requestAnimationFrame(() => {
-          if (textRef.current) {
-            setBBox(textRef.current.getBBox());
-          }
-        });
-        return () => cancelAnimationFrame(raf);
-      }
-    }, [value]);
-
-    if (x == null || y == null || value == null) return null;
-
-    const padding = 4; // px
-    // shift label upward so it doesn't overlap the point
-    const translateX = x;
-    const translateY = typeof y === 'number' ? y - 20 : y;
-
-    return (
-      <g transform={`translate(${translateX}, ${translateY})`}>
-        {bbox && (
-          <rect
-            x={bbox.x - padding}
-            y={bbox.y - padding}
-            width={bbox.width + padding * 2}
-            height={bbox.height + padding * 2}
-            rx={4}
-            fill="#000"
-          />
-        )}
-        <text
-          ref={textRef}
-          fontSize={12}
-          fontWeight="bold"
-          fill="white"
-          dominantBaseline="middle"
-          textAnchor="start"
-        >
-          {value}
-        </text>
-      </g>
-    );
-  };
-
   return (
     <Card>
       <CardHeader>
@@ -132,22 +77,22 @@ export const ChartLineLabel = () => {
             data={chartData}
             margin={{
               top: 20,
-              left: 30,
-              right: 30,
+              left: 10,
+              right: 50,
             }}
           >
             <CartesianGrid vertical={false} />
             <XAxis
               dataKey="date"
               tickLine={false}
-              axisLine={false}
+              axisLine={true}
               tickMargin={8}
               tickFormatter={(date) => new Date(date).toLocaleDateString()}
             />
             <YAxis
               domain={[yAxisMin, yAxisMax]}
               tickLine={false}
-              axisLine={false}
+              axisLine={true}
               tickMargin={8}
               tickFormatter={(value) => `$${value.toFixed(2)}`}
             />
