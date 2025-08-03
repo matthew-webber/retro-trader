@@ -2,7 +2,16 @@ import { useState } from 'react';
 import { useStock } from '@/contexts/useStock';
 
 const Home = () => {
-  const { stock, loading, error } = useStock();
+  const {
+    stock,
+    loading,
+    error,
+    ticker,
+    duration,
+    setTicker,
+    setDuration,
+    fetchStock,
+  } = useStock();
 
   const [shares, setShares] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -40,6 +49,11 @@ const Home = () => {
     }
   };
 
+  const handleFetchStock = (e: React.FormEvent) => {
+    e.preventDefault();
+    fetchStock(ticker, duration);
+  };
+
   if (loading) {
     return <p>Loading...</p>;
   }
@@ -55,6 +69,38 @@ const Home = () => {
           {stock.symbol} on {stock.date}
         </h2>
         <p>Close: ${stock.close.toFixed(2)}</p>
+
+        {/* Stock Configuration Form */}
+        <form onSubmit={handleFetchStock}>
+          <div>
+            <label>
+              Ticker:
+              <input
+                type="text"
+                value={ticker}
+                onChange={(e) => setTicker(e.target.value.toUpperCase())}
+                placeholder="e.g. AAPL"
+                required
+              />
+            </label>
+          </div>
+          <div>
+            <label>
+              Historical Duration (days):
+              <select
+                value={duration}
+                onChange={(e) => setDuration(Number(e.target.value))}
+              >
+                <option value={10}>10 days</option>
+                <option value={30}>30 days</option>
+                <option value={60}>60 days</option>
+                <option value={90}>90 days</option>
+              </select>
+            </label>
+          </div>
+          <button type="submit">Fetch Stock Data</button>
+        </form>
+
         {stock.previous_closes?.length > 0 && (
           <div>
             <h3>Previous closes</h3>
@@ -67,6 +113,8 @@ const Home = () => {
             </ul>
           </div>
         )}
+
+        {/* Profit Calculation Form */}
         <form onSubmit={handleSubmit}>
           <label>
             Shares:
@@ -86,8 +134,7 @@ const Home = () => {
         {calcError && <p>{calcError}</p>}
         {profit !== null && (
           <p>
-            Profit/Loss: {profit >= 0 ? '+' : ''}
-            {profit.toFixed(2)}
+            Profit/Loss: {profit >= 0 ? '+' : ''}${Math.abs(profit).toFixed(2)}
           </p>
         )}
       </div>
