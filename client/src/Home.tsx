@@ -1,44 +1,13 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useStock } from '@/contexts/useStock';
 
-interface StockData {
-  symbol: string;
-  date: string;
-  close: number;
-  previous_closes: { date: string; close: number }[];
-}
-
 const Home = () => {
-  const [stock, setStock] = useState<StockData | null>(null); // Initialize stock as null
-  const [loading, setLoading] = useState(true); // Track loading state
-  const [error, setError] = useState<string | null>(null); // Track error state
+  const { stock, loading, error } = useStock();
 
   const [shares, setShares] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [profit, setProfit] = useState<number | null>(null);
   const [calcError, setCalcError] = useState<string | null>(null);
-
-  useEffect(() => {
-    fetch('/api/random-stock')
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error(`HTTP ${res.status}: Failed to fetch stock data`);
-        }
-        return res.json();
-      })
-      .then((data) => {
-        if (!data.symbol || !data.date || typeof data.close !== 'number') {
-          throw new Error('Invalid stock data format');
-        }
-        setStock(data);
-        setLoading(false);
-      })
-      .catch((err: Error) => {
-        console.error('Fetch error:', err);
-        setError(err.message);
-        setLoading(false);
-      });
-  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -70,14 +39,6 @@ const Home = () => {
       setSubmitting(false);
     }
   };
-
-  if (loading) {
-    return <p>Loading...</p>;
-  }
-
-  if (error || !stock) {
-    return <p>Error: {error || 'Unable to load stock data'}</p>;
-  }
 
   if (loading) {
     return <p>Loading...</p>;

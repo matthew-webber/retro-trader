@@ -19,32 +19,33 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 
-const chartData = [
-  { month: 'January', desktop: 186, mobile: 80 },
-  { month: 'February', desktop: 305, mobile: 200 },
-  { month: 'March', desktop: 237, mobile: 120 },
-  { month: 'April', desktop: 73, mobile: 190 },
-  { month: 'May', desktop: 209, mobile: 130 },
-  { month: 'June', desktop: 214, mobile: 140 },
-];
-
-const chartConfig = {
-  desktop: {
-    label: 'Desktop',
-    color: 'var(--chart-1)',
-  },
-  mobile: {
-    label: 'Mobile',
-    color: 'var(--chart-2)',
-  },
-} satisfies ChartConfig;
-
 export const ChartLineLabel = () => {
+  const { stock, loading, error } = useStock();
+
+  if (loading) {
+    return <p>Loading...</p>;
+  }
+
+  if (error || !stock) {
+    return <p>Error loading chart</p>;
+  }
+
+  const chartData = [...stock.previous_closes, { date: stock.date, close: stock.close }];
+
+  const chartConfig = {
+    close: {
+      label: `${stock.symbol} Close`,
+      color: 'var(--chart-1)',
+    },
+  } satisfies ChartConfig;
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Line Chart - Label</CardTitle>
-        <CardDescription>January - June 2024</CardDescription>
+        <CardTitle>{stock.symbol} Closing Prices</CardTitle>
+        <CardDescription>
+          {chartData[0].date} - {chartData[chartData.length - 1].date}
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig}>
@@ -59,23 +60,22 @@ export const ChartLineLabel = () => {
           >
             <CartesianGrid vertical={false} />
             <XAxis
-              dataKey="month"
+              dataKey="date"
               tickLine={false}
               axisLine={false}
               tickMargin={8}
-              tickFormatter={(value) => value.slice(0, 3)}
             />
             <ChartTooltip
               cursor={false}
               content={<ChartTooltipContent indicator="line" />}
             />
             <Line
-              dataKey="desktop"
+              dataKey="close"
               type="linear"
-              stroke="var(--color-desktop)"
+              stroke="var(--color-close)"
               strokeWidth={2}
               dot={{
-                fill: 'var(--color-desktop)',
+                fill: 'var(--color-close)',
               }}
               activeDot={{
                 r: 6,
@@ -93,10 +93,10 @@ export const ChartLineLabel = () => {
       </CardContent>
       <CardFooter className="flex-col items-start gap-2 text-sm">
         <div className="flex gap-2 leading-none font-medium">
-          Trending up by 5.2% this month
+          {stock.symbol} last {chartData.length} days
         </div>
         <div className="text-muted-foreground leading-none">
-          Showing total visitors for the last 6 months
+          Closing prices
         </div>
       </CardFooter>
     </Card>

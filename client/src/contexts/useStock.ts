@@ -1,4 +1,5 @@
-import { useContext } from "react";
+import { useContext } from 'react';
+import { StockContext } from './StockContext';
 
 export const useStock = () => {
   const context = useContext(StockContext);
