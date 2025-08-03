@@ -1,20 +1,22 @@
+/* eslint-disable react-refresh/only-export-components */
 import { createContext, useEffect, useState, type ReactNode } from 'react';
 
-interface StockData {
+export interface StockData {
   symbol: string;
   date: string;
   close: number;
   previous_closes: { date: string; close: number }[];
 }
 
-interface StockContextType {
+export interface StockContextType {
   stock: StockData | null;
   loading: boolean;
   error: string | null;
   refetchStock: () => void;
 }
 
-const StockContext = createContext<StockContextType | undefined>(undefined);
+export const StockContext = createContext<StockContextType | undefined>(undefined);
+
 export const StockProvider = ({ children }: { children: ReactNode }) => {
   const [stock, setStock] = useState<StockData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -33,9 +35,10 @@ export const StockProvider = ({ children }: { children: ReactNode }) => {
         throw new Error('Invalid stock data format');
       }
       setStock(data);
-    } catch (err: any) {
+    } catch (err) {
       console.error('Fetch error:', err);
-      setError(err.message);
+      const message = err instanceof Error ? err.message : 'Unknown error';
+      setError(message);
     } finally {
       setLoading(false);
     }
