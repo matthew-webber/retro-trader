@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import Data from './Data';
+import { useStock } from '@/contexts/useStock';
 
 interface StockData {
   symbol: string;
@@ -89,13 +89,13 @@ const Home = () => {
 
   return (
     <>
-      <div className="game">
+      <div>
         <h2>
           {stock.symbol} on {stock.date}
         </h2>
         <p>Close: ${stock.close.toFixed(2)}</p>
         {stock.previous_closes?.length > 0 && (
-          <div className="context">
+          <div>
             <h3>Previous closes</h3>
             <ul>
               {stock.previous_closes.map(({ date, close }) => (
@@ -106,7 +106,7 @@ const Home = () => {
             </ul>
           </div>
         )}
-        <form className="trade-form" onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit}>
           <label>
             Shares:
             <input
@@ -122,15 +122,14 @@ const Home = () => {
             Calculate
           </button>
         </form>
-        {calcError && <p className="result">{calcError}</p>}
+        {calcError && <p>{calcError}</p>}
         {profit !== null && (
-          <p className="result">
+          <p>
             Profit/Loss: {profit >= 0 ? '+' : ''}
             {profit.toFixed(2)}
           </p>
         )}
       </div>
-      <Data />
     </>
   );
 };

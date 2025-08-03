@@ -1,5 +1,7 @@
 'use client';
 
+import { useStock } from '@/contexts/useStock';
+
 import {
   type ChartConfig,
   ChartContainer,
