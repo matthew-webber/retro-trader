@@ -1,6 +1,6 @@
 import ChartLineLabel from './components/chart/chartLineLabel';
 
-const Data = () => {
+const Visualization = () => {
   return (
     <div>
       <h1>Data Visualization</h1>
@@ -9,4 +9,4 @@ const Data = () => {
   );
 };
 
-export default Data;
+export default Visualization;
