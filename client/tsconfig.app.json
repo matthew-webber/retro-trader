@@ -33,6 +33,6 @@
     "noUncheckedSideEffectImports": true
   },
   "include": [
-    "src"
+    "src",
   ]
 }

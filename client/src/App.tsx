@@ -1,11 +1,11 @@
 import './App.css';
-import Game from './Game';
+import Home from './Home';
 
 function App() {
   return (
     <div className="app">
       <h1>retrotrader</h1>
-      <Game />
+      <Home />
     </div>
   );
 }
